@@ -123,8 +123,41 @@ check_lint_drift() {
   fi
 }
 
-[[ "$lang" == csharp || "$lang" == all ]] && verify_csharp
-[[ "$lang" == rust || "$lang" == all ]] && verify_rust
+# The baseline profile must report the same violations as warnings without failing the build.
+check_baseline() {
+  local lang="$1" label="$2" expected="$3" rc=0 out actual
+  shift 3
+  out="$("$@" 2>&1)" || rc=$?
+  if [[ "$lang" == csharp ]]; then
+    actual="$(sed -nE 's/^ *(.*[^ ]) ?: warning ([A-Z][A-Z0-9]*):.*/\1 \2/p' <<<"$out" | count_codes | join)"
+  else
+    actual="$(jq -r 'select(.reason == "compiler-message") | .message | select(.level == "warning" and .code != null)
+        | "\(.spans[0].file_name):\(.spans[0].line_start):\(.spans[0].column_start) \(.code.code)"' <<<"$out" \
+        | tr -d '\r' | count_codes | join)"
+  fi
+  if [[ $rc -eq 0 && "$actual" == "$expected" ]]; then
+    passed=$((passed + 1)); printf '%-6s %-55s %-28s %s\n' "$lang" "$label" "[$expected]" PASS
+  else
+    failed=$((failed + 1)); printf '%-6s %-55s %-28s %s\n' "$lang" "$label" "[$expected]" FAIL
+    printf '       actual warnings: [%s] exit=%s\n' "$actual" "$rc"
+  fi
+  if [[ -n "$tsv" ]]; then
+    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$lang" "$label" "profile" "profile" "$expected" "$actual" \
+      "$([[ $rc -eq 0 && "$actual" == "$expected" ]] && echo PASS || echo FAIL)" >> "$tsv"
+  fi
+}
+
+if [[ "$lang" == csharp || "$lang" == all ]]; then
+  verify_csharp
+  check_baseline csharp "profile-baseline (api-001-wall-clock warns, exit 0)" "RS0030*5" \
+    dotnet build "$repo/csharp/fixtures/negative/api-001-wall-clock/Fixture.csproj" --no-incremental -nologo \
+    -clp:NoSummary -p:EngineeringStandardsProfile=baseline
+fi
+if [[ "$lang" == rust || "$lang" == all ]]; then
+  verify_rust
+  check_baseline rust "profile-baseline (err-001-unwrap warns, exit 0)" "clippy::unwrap_used" \
+    bash -c 'cd "$1/rust" && cargo clippy -p neg-err-001-unwrap --message-format=json 2>/dev/null' _ "$repo"
+fi
 
 echo "negative fixtures: $passed passed, $failed failed"
 [[ $failed -eq 0 ]]

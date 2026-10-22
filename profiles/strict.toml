@@ -1,9 +1,15 @@
+# Descriptive only: no tool reads this file. The switches below select the profile.
 profile = "strict"
-description = "Use after the adopted rules are proven on the project's pinned toolchain."
+description = "Warnings are errors and the guard rails are enforced. Use for new code and for projects that are clean."
+verified_by = "all negative fixtures run under strict"
+
 [csharp]
+switch = "<EngineeringStandardsProfile>strict</EngineeringStandardsProfile>"
 nullable = "enable"
-treat_warnings_as_errors = true
 analysis_level = "latest-all"
+treat_warnings_as_errors = true
+guards = "ESTD001-ESTD005"
+
 [rust]
-clippy_all = "deny"
-clippy_pedantic = "warn"
+switch = "scripts/quality.sh rust PATH (default; clippy -D warnings)"
+lints = "rust/workspace-lints.toml, warnings denied"

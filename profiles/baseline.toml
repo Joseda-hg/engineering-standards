@@ -1,9 +1,15 @@
+# Descriptive only: no tool reads this file. The switches below select the profile.
 profile = "baseline"
-description = "Warnings visible, build retains existing debt; CI tracks newly introduced diagnostics."
+description = "Diagnostics are visible as warnings; the build does not fail on them. Use while measuring and remediating."
+verified_by = "profile-baseline checks in scripts/verify-fixtures.sh"
+
 [csharp]
+switch = "<EngineeringStandardsProfile>baseline</EngineeringStandardsProfile> (default when unset)"
 nullable = "enable"
-treat_warnings_as_errors = false
 analysis_level = "latest-all"
+treat_warnings_as_errors = false
+guards = "off (ESTD001-ESTD005 run only under strict)"
+
 [rust]
-clippy_all = "warn"
-clippy_pedantic = "allow"
+switch = "QUALITY_PROFILE=baseline scripts/quality.sh rust PATH (clippy without -D warnings)"
+lints = "rust/workspace-lints.toml at warn"

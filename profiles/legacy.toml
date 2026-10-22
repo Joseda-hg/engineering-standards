@@ -1,6 +1,9 @@
+# Descriptive only: NOT IMPLEMENTED. Planned "no new warnings" ratchet for large legacy code bases.
 profile = "legacy"
-description = "Project-owned baselines for legacy diagnostics; new violations rejected."
+description = "Project-owned baseline of existing diagnostics; only new diagnostics fail the build."
+status = "planned"
+
 [ratchet]
-mode = "fingerprint"
-consumer_owned_baseline = true
-note = "Implementation planned; do not treat this file as a working lint tool."
+mode = "fingerprint"            # code + file + normalised message, tolerant to line moves
+consumer_owned_baseline = true  # baselines live in the consumer repository, never here
+interim = "Use baseline for legacy projects and strict for clean ones (ADOPTION.md, phases 1-3)."

@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+# Self-test for this repository: every negative fixture must FAIL with exactly the diagnostic
+# codes listed in its expected.txt (no more, no fewer).
+#
+# Usage: verify-fixtures.sh [csharp|rust|all] [--tsv FILE]
+#
+# expected.txt format:
+#   # rule: ASY-001
+#   # mechanism: compiler | analyzer | msbuild-guard | formatter | scan
+#   # summary: one line
+#   CODE            (one diagnostic code per line)
+set -euo pipefail
+
+repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+lang="all"
+tsv=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    csharp|rust|all) lang="$1"; shift ;;
+    --tsv) tsv="$2"; shift 2 ;;
+    *) echo "Usage: $0 [csharp|rust|all] [--tsv FILE]" >&2; exit 2 ;;
+  esac
+done
+
+export DOTNET_CLI_UI_LANGUAGE=en DOTNET_NOLOGO=1 DOTNET_CLI_TELEMETRY_OPTOUT=1
+passed=0
+failed=0
+[[ -n "$tsv" ]] && printf 'language\tfixture\trule\tmechanism\texpected\tactual\tresult\n' > "$tsv"
+
+meta() { sed -n "s/^# $1: //p" "$2/expected.txt"; }
+expected_codes() { grep -v '^#' "$1/expected.txt" | tr -d '\r' | sed '/^$/d' | sort -u; }
+join() { paste -sd' ' -; }
+
+# record LANG DIR ACTUAL_CODES EXIT_CODE
+record() {
+  local lang="$1" dir="$2" actual="$3" rc="$4"
+  local name expected result
+  name="$(basename "$dir")"
+  expected="$(expected_codes "$dir" | join)"
+  actual="$(printf '%s\n' "$actual" | sed '/^$/d' | sort -u | join)"
+  if [[ "$rc" -eq 0 ]]; then
+    result="FAIL (fixture passed; it must fail)"
+  elif [[ "$actual" != "$expected" ]]; then
+    result="FAIL (diagnostics differ)"
+  else
+    result="PASS"
+  fi
+  if [[ "$result" == PASS ]]; then passed=$((passed + 1)); else failed=$((failed + 1)); fi
+  printf '%-6s %-55s %-28s %s\n' "$lang" "$name" "[$expected]" "$result"
+  [[ "$result" == PASS ]] || printf '       actual: [%s] exit=%s\n' "$actual" "$rc"
+  if [[ -n "$tsv" ]]; then
+    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$lang" "$name" "$(meta rule "$dir")" "$(meta mechanism "$dir")" \
+      "$expected" "$actual" "$result" >> "$tsv"
+  fi
+}
+
+scan_fixture() {
+  local lang="$1" dir="$2" out rc=0
+  out="$("$repo/scripts/scan-suppressions.sh" "$dir" 2>&1)" || rc=$?
+  record "$lang" "$dir" "$(grep -oE 'error [A-Z][A-Z0-9]*:' <<<"$out" | awk '{print $2}' | tr -d ':')" "$rc"
+}
+
+verify_csharp() {
+  command -v dotnet >/dev/null || { echo "dotnet unavailable" >&2; exit 127; }
+  local dir out rc
+  for dir in "$repo"/csharp/fixtures/negative/*/; do
+    dir="${dir%/}"
+    if [[ "$(meta mechanism "$dir")" == scan ]]; then scan_fixture csharp "$dir"; continue; fi
+    rc=0
+    out="$(dotnet build "$dir/Fixture.csproj" --no-incremental -nologo -clp:NoSummary 2>&1)" || rc=$?
+    # Uncoded MSBuild errors ("error :") are reported as UNCODED so they can never match.
+    record csharp "$dir" "$(grep -oE ': error [A-Z][A-Z0-9]*:|: error :' <<<"$out" \
+      | sed -E 's/: error ([A-Z0-9]+):/\1/; s/: error :/UNCODED/')" "$rc"
+  done
+}
+
+verify_rust() {
+  command -v cargo >/dev/null || { echo "cargo unavailable" >&2; exit 127; }
+  command -v jq >/dev/null || { echo "jq unavailable" >&2; exit 127; }
+  local dir name out rc
+  check_lint_drift
+  for dir in "$repo"/rust/fixtures/negative/*/; do
+    dir="${dir%/}"
+    name="$(basename "$dir")"
+    case "$(meta mechanism "$dir")" in
+      scan) scan_fixture rust "$dir"; continue ;;
+      formatter)
+        rc=0
+        (cd "$dir" && cargo fmt -- --check) >/dev/null 2>&1 || rc=$?
+        record rust "$dir" "$([[ $rc -eq 1 ]] && echo rustfmt)" "$rc"
+        continue ;;
+    esac
+    rc=0
+    # Run from rust/ so rustup honours rust/rust-toolchain.toml.
+    out="$(cd "$repo/rust" && cargo clippy -p "neg-$name" --all-targets \
+            --message-format=json -- -D warnings 2>/dev/null)" || rc=$?
+    record rust "$dir" "$(jq -r 'select(.reason == "compiler-message") | .message
+        | select(.level == "error" and (.message | test("^aborting due to") | not))
+        | .code.code // "UNCODED"' <<<"$out" | tr -d '\r')" "$rc"
+  done
+}
+
+# rust/Cargo.toml carries a copy of workspace-lints.toml so the fixtures use the shipped lints.
+check_lint_drift() {
+  local strip='/^\[workspace\.lints/,$ { /^[[:space:]]*(#|$)/d; p; }'
+  if diff <(sed -nE "$strip" "$repo/rust/workspace-lints.toml" | tr -d '\r') \
+          <(sed -nE "$strip" "$repo/rust/Cargo.toml" | tr -d '\r') >/dev/null; then
+    passed=$((passed + 1))
+    printf '%-6s %-55s %-28s %s\n' rust "lint-drift (workspace-lints.toml == Cargo.toml)" "" PASS
+  else
+    failed=$((failed + 1))
+    printf '%-6s %-55s %-28s %s\n' rust "lint-drift (workspace-lints.toml == Cargo.toml)" "" FAIL
+  fi
+}
+
+[[ "$lang" == csharp || "$lang" == all ]] && verify_csharp
+[[ "$lang" == rust || "$lang" == all ]] && verify_rust
+
+echo "negative fixtures: $passed passed, $failed failed"
+[[ $failed -eq 0 ]]

@@ -1,0 +1,4 @@
+# rule: DOC-001
+# mechanism: scan
+# summary: ADR without a valid status and without a Consequences section
+ADR001 2

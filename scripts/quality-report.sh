@@ -27,7 +27,8 @@ run_step() {
 run_step "C# positive: build, test, format" csharp-positive bash scripts/quality.sh csharp csharp/fixtures/positive/Positive.slnx
 run_step "Rust positive: fmt, check, clippy, test" rust-positive bash scripts/quality.sh rust rust
 run_step "Suppression scan (SUP-001)" scan bash scripts/scan-suppressions.sh --exclude '*/fixtures/negative' csharp rust scripts
-run_step "Negative fixtures (C# and Rust)" fixtures bash scripts/verify-fixtures.sh all --tsv "$out/fixtures.tsv"
+run_step "ADR format (DOC-001)" adrs bash scripts/check-adrs.sh docs/adr
+run_step "Negative fixtures (C#, Rust, docs)" fixtures bash scripts/verify-fixtures.sh all --tsv "$out/fixtures.tsv"
 
 version() { "$@" 2>/dev/null | head -n1 | tr -d '\r' || echo "unavailable"; }
 dotnet_sdk="$(version dotnet --version)"

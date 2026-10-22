@@ -12,8 +12,8 @@ rust_workspace := "rust"
 default:
     @just --list
 
-# Run every check: positive fixtures, negative fixtures and the suppression scan.
-quality: quality-csharp quality-rust scan fixtures
+# Run every check: positive fixtures, suppression scan, ADR format and negative fixtures.
+quality: quality-csharp quality-rust scan adrs fixtures
 
 # Apply formatters and automatic fixes to the positive fixtures (never to negative fixtures).
 quality-fix:
@@ -35,6 +35,10 @@ quality-rust:
 # Verify that every negative fixture fails with exactly its expected diagnostics.
 fixtures lang="all":
     bash scripts/verify-fixtures.sh {{ lang }}
+
+# Check Architecture Decision Records in docs/adr (DOC-001).
+adrs:
+    bash scripts/check-adrs.sh docs/adr
 
 # Report suppressions without a reason and reference (SUP-001).
 scan:

@@ -2,7 +2,7 @@
 # Self-test for this repository: every negative fixture must FAIL with exactly the diagnostics
 # listed in its expected.txt - same codes, same number of distinct locations, nothing else.
 #
-# Usage: verify-fixtures.sh [csharp|rust|all] [--tsv FILE]
+# Usage: verify-fixtures.sh [csharp|rust|docs|all] [--tsv FILE]
 #
 # expected.txt format:
 #   # rule: ASY-001
@@ -17,9 +17,9 @@ lang="all"
 tsv=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    csharp|rust|all) lang="$1"; shift ;;
+    csharp|rust|docs|all) lang="$1"; shift ;;
     --tsv) tsv="$2"; shift 2 ;;
-    *) echo "Usage: $0 [csharp|rust|all] [--tsv FILE]" >&2; exit 2 ;;
+    *) echo "Usage: $0 [csharp|rust|docs|all] [--tsv FILE]" >&2; exit 2 ;;
   esac
 done
 
@@ -67,6 +67,17 @@ scan_fixture() {
   local lang="$1" dir="$2" out rc=0
   out="$("$repo/scripts/scan-suppressions.sh" "$dir" 2>&1)" || rc=$?
   record "$lang" "$dir" "$(sed -nE 's/^(.*): error ([A-Z][A-Z0-9]*):.*/\1 \2/p' <<<"$out")" "$rc"
+}
+
+# Language-neutral fixtures (fixtures/negative): ADR format (DOC-001).
+verify_docs() {
+  local dir out rc
+  for dir in "$repo"/fixtures/negative/*/; do
+    dir="${dir%/}"
+    rc=0
+    out="$("$repo/scripts/check-adrs.sh" "$dir" 2>&1)" || rc=$?
+    record docs "$dir" "$(sed -nE 's/^(.*): error ([A-Z][A-Z0-9]*):.*/\1 \2/p' <<<"$out")" "$rc"
+  done
 }
 
 verify_csharp() {
@@ -161,6 +172,7 @@ check_baseline() {
   fi
 }
 
+[[ "$lang" == docs || "$lang" == all ]] && verify_docs
 if [[ "$lang" == csharp || "$lang" == all ]]; then
   verify_csharp
   check_baseline csharp "profile-baseline (api-001-wall-clock warns, exit 0)" "RS0030*5" \

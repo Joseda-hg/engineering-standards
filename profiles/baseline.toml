@@ -1,0 +1,9 @@
+profile = "baseline"
+description = "Warnings visible, build retains existing debt; CI tracks newly introduced diagnostics."
+[csharp]
+nullable = "enable"
+treat_warnings_as_errors = false
+analysis_level = "latest-all"
+[rust]
+clippy_all = "warn"
+clippy_pedantic = "allow"

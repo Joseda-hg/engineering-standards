@@ -1,0 +1,9 @@
+profile = "strict"
+description = "Use after the adopted rules are proven on the project's pinned toolchain."
+[csharp]
+nullable = "enable"
+treat_warnings_as_errors = true
+analysis_level = "latest-all"
+[rust]
+clippy_all = "deny"
+clippy_pedantic = "warn"

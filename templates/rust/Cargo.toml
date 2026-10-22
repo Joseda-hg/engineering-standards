@@ -1,0 +1,15 @@
+[package]
+name = "quality-smoke-rust"
+version = "0.1.0"
+edition = "2021"
+
+[lints]
+workspace = true
+
+[workspace]
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }

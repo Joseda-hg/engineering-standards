@@ -1,0 +1,4 @@
+# Place in the consuming workspace root. Uncomment only verified, tested paths.
+# disallowed-methods = [
+#   { path = "std::thread::sleep", reason = "Do not block async executor threads." },
+# ]

@@ -1,0 +1,4 @@
+# Starter placeholder — do not wire into analyzers until the exact symbol names,
+# compatibility and exception policy have been verified using negative fixtures.
+# Sample syntax for Microsoft.CodeAnalysis.BannedApiAnalyzers:
+# T:System.DateTime; Use an injectable time source where determinism matters.

@@ -1,0 +1,6 @@
+profile = "legacy"
+description = "Project-owned baselines for legacy diagnostics; new violations rejected."
+[ratchet]
+mode = "fingerprint"
+consumer_owned_baseline = true
+note = "Implementation planned; do not treat this file as a working lint tool."

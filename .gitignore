@@ -1,0 +1,6 @@
+**/bin/
+**/obj/
+**/target/
+.vscode/
+.idea/
+.DS_Store

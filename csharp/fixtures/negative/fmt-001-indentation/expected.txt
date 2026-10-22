@@ -1,4 +1,4 @@
 # rule: FMT-001
 # mechanism: analyzer
 # summary: Code that does not follow .editorconfig formatting
-IDE0055
+IDE0055 3

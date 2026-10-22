@@ -1,4 +1,4 @@
 # rule: API-001
 # mechanism: analyzer
 # summary: Wall-clock statics instead of an injected TimeProvider
-RS0030
+RS0030 5

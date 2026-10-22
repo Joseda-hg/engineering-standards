@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Self-test for this repository: every negative fixture must FAIL with exactly the diagnostic
-# codes listed in its expected.txt (no more, no fewer).
+# Self-test for this repository: every negative fixture must FAIL with exactly the diagnostics
+# listed in its expected.txt - same codes, same number of distinct locations, nothing else.
 #
 # Usage: verify-fixtures.sh [csharp|rust|all] [--tsv FILE]
 #
@@ -8,7 +8,8 @@
 #   # rule: ASY-001
 #   # mechanism: compiler | analyzer | msbuild-guard | formatter | scan
 #   # summary: one line
-#   CODE            (one diagnostic code per line)
+#   CODE [COUNT]    one line per diagnostic code; COUNT = distinct locations (default 1).
+#                   Counting proves every banned symbol / lint in a multi-violation fixture fires.
 set -euo pipefail
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -28,16 +29,24 @@ failed=0
 [[ -n "$tsv" ]] && printf 'language\tfixture\trule\tmechanism\texpected\tactual\tresult\n' > "$tsv"
 
 meta() { sed -n "s/^# $1: //p" "$2/expected.txt"; }
-expected_codes() { grep -v '^#' "$1/expected.txt" | tr -d '\r' | sed '/^$/d' | sort -u; }
+# Normalised tokens: CODE for one occurrence, CODE*N for N distinct locations.
+expected_codes() {
+  grep -v '^#' "$1/expected.txt" | tr -d '\r' | sed '/^$/d' \
+    | awk '{ n = ($2 == "" ? 1 : $2); print (n == 1 ? $1 : $1 "*" n) }' | sort
+}
+# stdin: "LOCATION CODE" lines (duplicates collapse), stdout: normalised tokens.
+count_codes() {
+  sed '/^$/d' | sort -u | awk '{ n[$NF]++ } END { for (c in n) print (n[c] == 1 ? c : c "*" n[c]) }' | sort
+}
 join() { paste -sd' ' -; }
 
-# record LANG DIR ACTUAL_CODES EXIT_CODE
+# record LANG DIR "LOCATION CODE"-LINES EXIT_CODE
 record() {
   local lang="$1" dir="$2" actual="$3" rc="$4"
   local name expected result
   name="$(basename "$dir")"
   expected="$(expected_codes "$dir" | join)"
-  actual="$(printf '%s\n' "$actual" | sed '/^$/d' | sort -u | join)"
+  actual="$(printf '%s\n' "$actual" | count_codes | join)"
   if [[ "$rc" -eq 0 ]]; then
     result="FAIL (fixture passed; it must fail)"
   elif [[ "$actual" != "$expected" ]]; then
@@ -57,7 +66,7 @@ record() {
 scan_fixture() {
   local lang="$1" dir="$2" out rc=0
   out="$("$repo/scripts/scan-suppressions.sh" "$dir" 2>&1)" || rc=$?
-  record "$lang" "$dir" "$(grep -oE 'error [A-Z][A-Z0-9]*:' <<<"$out" | awk '{print $2}' | tr -d ':')" "$rc"
+  record "$lang" "$dir" "$(sed -nE 's/^(.*): error ([A-Z][A-Z0-9]*):.*/\1 \2/p' <<<"$out")" "$rc"
 }
 
 verify_csharp() {
@@ -69,8 +78,8 @@ verify_csharp() {
     rc=0
     out="$(dotnet build "$dir/Fixture.csproj" --no-incremental -nologo -clp:NoSummary 2>&1)" || rc=$?
     # Uncoded MSBuild errors ("error :") are reported as UNCODED so they can never match.
-    record csharp "$dir" "$(grep -oE ': error [A-Z][A-Z0-9]*:|: error :' <<<"$out" \
-      | sed -E 's/: error ([A-Z0-9]+):/\1/; s/: error :/UNCODED/')" "$rc"
+    record csharp "$dir" "$(sed -nE 's/^ *(.*[^ ]) ?: error ([A-Z][A-Z0-9]*):.*/\1 \2/p
+                                     s/^ *(.*[^ ]) ?: error :.*/\1 UNCODED/p' <<<"$out")" "$rc"
   done
 }
 
@@ -87,7 +96,7 @@ verify_rust() {
       formatter)
         rc=0
         (cd "$dir" && cargo fmt -- --check) >/dev/null 2>&1 || rc=$?
-        record rust "$dir" "$([[ $rc -eq 1 ]] && echo rustfmt)" "$rc"
+        record rust "$dir" "$([[ $rc -eq 1 ]] && echo "$name rustfmt")" "$rc"
         continue ;;
     esac
     rc=0
@@ -96,7 +105,8 @@ verify_rust() {
             --message-format=json -- -D warnings 2>/dev/null)" || rc=$?
     record rust "$dir" "$(jq -r 'select(.reason == "compiler-message") | .message
         | select(.level == "error" and (.message | test("^aborting due to") | not))
-        | .code.code // "UNCODED"' <<<"$out" | tr -d '\r')" "$rc"
+        | "\(.spans[0].file_name // "-"):\(.spans[0].line_start // 0):\(.spans[0].column_start // 0) \(.code.code // "UNCODED")"' \
+        <<<"$out" | tr -d '\r')" "$rc"
   done
 }
 

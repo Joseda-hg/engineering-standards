@@ -1,4 +1,4 @@
 # rule: ASY-001
 # mechanism: analyzer
-# summary: Blocking through GetAwaiter().GetResult()
-RS0030
+# summary: Blocking through GetAwaiter().GetResult() - every awaiter type, plain and ConfigureAwait
+RS0030 8

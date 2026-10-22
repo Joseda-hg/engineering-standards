@@ -1,4 +1,4 @@
 # rule: ASY-001
 # mechanism: analyzer
-# summary: Blocking on Task.Wait / WaitAll / WaitAny (all overloads)
-RS0030
+# summary: Blocking on Task.Wait / WaitAll / WaitAny - one call per overload
+RS0030 18

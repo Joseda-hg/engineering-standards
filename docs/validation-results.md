@@ -10,6 +10,7 @@ remains open. Regenerate the raw report with `just quality-report` (written to `
 | Ubuntu 24.04 container, clean clone, CI toolchain install | `f8425c1` | `just quality` + `just quality-report` | **PASS** |
 | Windows 11 (PowerShell → Git Bash) | `f8425c1` + report rendering fix | `just quality-report` | **PASS** |
 | Docker shellcheck / actionlint | `f8425c1` | all scripts / workflow | Clean |
+| **GitHub Actions** ubuntu-24.04 and windows-2025 ([run 39720956465](https://github.com/Joseda-hg/engineering-standards/actions/runs/39720956465)) | `474f1d0` | `just quality` + `just quality-report` | **PASS** (both jobs; Windows 5m41s) |
 
 - C# positive: 0 warnings, 0 errors; 12 / 12 tests (including CsCheck properties and typestate).
 - Rust positive: clean under `-D warnings` with `pedantic`, `nursery` and the full ERR-002 set;
@@ -54,7 +55,8 @@ Microsoft.Testing.Platform, rustc / Clippy / rustfmt 1.90.0, just 1.45.0, jq 1.7
 | Suppression scan over shipped config, positive fixtures and scripts | No findings |
 | Negative fixtures + consistency checks | **42 / 42** passed: C# 24 fixtures + baseline profile; Rust 14 fixtures + baseline profile + lint drift; version consistency |
 
-The GitHub Actions workflow itself has not run on GitHub yet, because nothing has been published (by
+*(Superseded: the workflow has since run on GitHub - see the v0.3.0 table above.)* At the time of
+this run the GitHub Actions workflow had not run on GitHub, because nothing had been published (by
 instruction). The container run reproduces the Linux job step by step (SDK installed from
 `global.json` with `dotnet-install`, Rust from `rust-toolchain.toml`, just 1.45.0, jq), but the
 Windows runner image and the pinned actions are only verified by actionlint until the first push.
@@ -93,12 +95,11 @@ removing a lint from one or both lint tables each made the expected fixtures fai
   rules, DOMAIN-001 (full list in [rule-coverage.md](rule-coverage.md)).
 - The `legacy` fingerprint ratchet is not implemented.
 - No published package: distribution is by Git tag (submodule or vendored copy).
-- The pushed GitHub workflow has not run yet (see above).
 
 ## Next steps (prioritised)
 
-1. **Publish and run CI** (with authorisation): push to GitHub, confirm both matrix jobs, then protect
-   `main` with the `quality` checks and tag `v0.2.0`.
+1. **Protect and tag** (with authorisation): CI has run green on GitHub for both matrix jobs; protect
+   `main` with the `quality` checks and tag `v0.3.0`.
 2. **Pilot adoption** in one small, non-PacificGold repository using the baseline → strict phases;
    capture friction in ADOPTION.md.
 3. **Close high-value gaps** with fixtures: `clippy::let_underscore_must_use`, `VSTHRD100` for

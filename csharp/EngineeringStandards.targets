@@ -21,5 +21,7 @@
            Text="SUP-001: TreatWarningsAsErrors must stay 'true' under the strict profile." />
     <Error Code="ESTD004" Condition="'$(AllowUnsafeBlocks)' == 'true' and '$(EngineeringStandardsUnsafeJustification)' == ''"
            Text="SAFE-001: AllowUnsafeBlocks requires an EngineeringStandardsUnsafeJustification property (reason and issue reference)." />
+    <Error Code="ESTD005" Condition="'$(RunAnalyzers)' == 'false' or '$(RunAnalyzersDuringBuild)' == 'false' or '$(EnforceCodeStyleInBuild)' != 'true' or '$(AnalysisLevel)' != 'latest-all'"
+           Text="SUP-001: analyzers must run in the build under the strict profile (RunAnalyzers='$(RunAnalyzers)', RunAnalyzersDuringBuild='$(RunAnalyzersDuringBuild)', EnforceCodeStyleInBuild='$(EnforceCodeStyleInBuild)', AnalysisLevel='$(AnalysisLevel)')." />
   </Target>
 </Project>

@@ -1,0 +1,4 @@
+# rule: SUP-001
+# mechanism: msbuild-guard
+# summary: Project turns analyzers off with RunAnalyzers=false
+ESTD005

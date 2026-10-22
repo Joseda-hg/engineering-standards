@@ -1,21 +1,65 @@
-name: Quality fixtures
+name: quality
+
 on:
   push:
+    branches: [main]
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: "1"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  CARGO_TERM_COLOR: never
+
 jobs:
-  rust:
-    runs-on: ubuntu-latest
+  quality:
+    name: quality (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+    defaults:
+      run:
+        shell: bash
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # SDK version comes from global.json (pinned, rollForward latestPatch).
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
-          components: clippy, rustfmt
-      - run: ./scripts/quality.sh rust templates/rust
-  csharp:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+          global-json-file: global.json
+
+      # Rust version and components come from rust/rust-toolchain.toml.
+      - name: Install pinned Rust toolchain
+        working-directory: rust
+        run: rustup toolchain install && rustc --version && cargo clippy --version && rustfmt --version
+
+      - uses: taiki-e/install-action@a4d3f3f761dcd95cce1b72cb61cb6d1963438177 # v2.87.30
         with:
-          dotnet-version: '10.0.x'
-      - run: ./scripts/quality.sh csharp templates/csharp
+          tool: just@1.45.0
+
+      - name: Tool versions
+        run: dotnet --version && just --version && jq --version
+
+      - name: just quality
+        run: just quality
+
+      - name: just quality-report
+        if: always()
+        run: just quality-report reports
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: quality-report-${{ matrix.os }}
+          path: reports/
+          if-no-files-found: warn

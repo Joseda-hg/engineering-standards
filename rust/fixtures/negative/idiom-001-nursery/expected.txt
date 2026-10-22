@@ -1,4 +1,4 @@
-# rule: IDIOM-001
+# rule: IDIOM-001 FUNC-001
 # mechanism: analyzer
 # summary: A nursery lint fires, proving the nursery group is enabled
 clippy::missing_const_for_fn

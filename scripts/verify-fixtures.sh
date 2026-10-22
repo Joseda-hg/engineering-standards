@@ -5,7 +5,7 @@
 # Usage: verify-fixtures.sh [csharp|rust|docs|all] [--tsv FILE]
 #
 # expected.txt format:
-#   # rule: ASY-001
+#   # rule: ASY-001            (several IDs allowed when one fixture proves several rules)
 #   # mechanism: compiler | analyzer | msbuild-guard | formatter | scan
 #   # summary: one line
 #   CODE [COUNT]    one line per diagnostic code; COUNT = distinct locations (default 1).

@@ -69,16 +69,19 @@ for r in "${step_results[@]}"; do [[ "$r" == PASS ]] || overall=FAIL; done
     echo
     echo "## Rule coverage (proven by passing negative fixtures)"
     echo
-    echo "| Rule | C# | Rust |"
-    echo "| --- | --- | --- |"
+    echo "A fixture may prove several rules (\`# rule: SUP-001 IDIOM-001\`)."
+    echo
+    echo "| Rule | C# | Rust | Language-neutral |"
+    echo "| --- | --- | --- | --- |"
     for rule in $(grep -oE '^\| [A-Z]+-[0-9]+' policies/README.md | tr -d '| '); do
       cells=()
-      for lang in csharp rust; do
-        cell="$(awk -F'\t' -v r="$rule" -v l="$lang" '$1 == l && $3 == r && $7 == "PASS" { n[$4]++ }
+      for lang in csharp rust docs; do
+        cell="$(awk -F'\t' -v r="$rule" -v l="$lang" '$1 == l && (" " $3 " ") ~ (" " r " ") && $7 == "PASS" { n[$4]++ }
           END { for (m in n) printf "%s%s (%d)", (s++ ? ", " : ""), m, n[m] }' "$out/fixtures.tsv")"
-        cells+=("${cell:-convention / review only}")
+        cells+=("${cell:--}")
       done
-      echo "| $rule | ${cells[0]} | ${cells[1]} |"
+      [[ "${cells[*]}" == "- - -" ]] && cells[2]="convention / review only"
+      echo "| $rule | ${cells[0]} | ${cells[1]} | ${cells[2]} |"
     done
     echo
   fi

@@ -3,7 +3,34 @@
 Recorded runs of the real toolchains against this repository, the defects they exposed, and what
 remains open. Regenerate the raw report with `just quality-report` (written to `reports/`, not committed).
 
-## Final runs (2026-10-22, commit `3a1dd83`)
+## v0.3.0 runs - No Boilerplate codification (2026-10-22)
+
+| Environment | Commit | Command | Result |
+| --- | --- | --- | --- |
+| Ubuntu 24.04 container, clean clone, CI toolchain install | `f8425c1` | `just quality` + `just quality-report` | **PASS** |
+| Windows 11 (PowerShell → Git Bash) | `f8425c1` + report rendering fix | `just quality-report` | **PASS** |
+| Docker shellcheck / actionlint | `f8425c1` | all scripts / workflow | Clean |
+
+- C# positive: 0 warnings, 0 errors; 12 / 12 tests (including CsCheck properties and typestate).
+- Rust positive: clean under `-D warnings` with `pedantic`, `nursery` and the full ERR-002 set;
+  8 unit/property tests, 2 integration tests, 1 doctest, 1 `compile_fail` doctest (typestate).
+- **66 / 66** fixture and consistency checks: C# 32 fixtures + baseline profile, Rust 29 fixtures +
+  baseline profile + lint drift, 1 language-neutral (ADR) fixture, version consistency.
+
+Findings during this round:
+
+| Finding | Resolution |
+| --- | --- |
+| Clippy 1.90 does not know `unchecked_time_subtraction` (the name used in the talks) | Use `unchecked_duration_subtraction`; rename on the next toolchain bump (ADR 0002) |
+| `clippy::needless_collect` (nursery) fires on collecting scoped-thread handles; following it would join each thread before spawning the next, silently serialising the work | Kept the `collect()`; `#[expect(clippy::needless_collect, reason = ...)]` - the documented way to answer nursery false positives |
+| `pedantic`/`nursery` flagged secondary issues in 9 existing and several new fixtures (`missing_const_for_fn`, `missing_panics_doc`, `manual_assert`, `must_use_candidate`, `unused_async`) | Fixtures rewritten to contain exactly one violation each |
+| `string_slice` does not co-fire `indexing_slicing` on `&s[0..1]` | Expectation corrected to the observed single code |
+| `--locked` refused the stale `Cargo.lock` after adding fixture crates | Lockfile regenerated and committed (intended behaviour) |
+| `CA1720` (identifier contains type name) on a fixture method named `Double` | Renamed |
+| The report under-counted rules proven by one fixture for several rules, and had no column for language-neutral fixtures | Multi-rule `# rule:` tags and a language-neutral column |
+| Python edits turned `\1` into control bytes in one script line | Rewritten from code points; repository scanned for control characters |
+
+## v0.2.0 runs (2026-10-22, commit `3a1dd83`)
 
 | Environment | Command | Result |
 | --- | --- | --- |
@@ -74,8 +101,9 @@ removing a lint from one or both lint tables each made the expected fixtures fai
    `main` with the `quality` checks and tag `v0.2.0`.
 2. **Pilot adoption** in one small, non-PacificGold repository using the baseline → strict phases;
    capture friction in ADOPTION.md.
-3. **Close high-value gaps** with fixtures: `IDE0010` (switch statements), `clippy::let_underscore_must_use`,
-   `clippy::panic`/`indexing_slicing`, `VSTHRD100` for `async void`, a `CA1849` fixture.
+3. **Close high-value gaps** with fixtures: `clippy::let_underscore_must_use`, `VSTHRD100` for
+   `async void`, a `CA1849` fixture, a C# analyzer for the `!` operator and unchecked
+   indexing/overflow (ERR-002 parity). (`IDE0010` and the Clippy panic lints were closed in v0.3.0.)
 4. **NuGet package** `EngineeringStandards.CSharp` (`buildTransitive`) and a Rust lint drift checker for
    consumers.
 5. **Fingerprint ratchet** (`legacy` profile) for large existing code bases.

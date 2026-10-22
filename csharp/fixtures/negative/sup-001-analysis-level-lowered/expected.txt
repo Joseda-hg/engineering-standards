@@ -1,4 +1,4 @@
-# rule: SUP-001
+# rule: SUP-001 IDIOM-001
 # mechanism: msbuild-guard
 # summary: Project lowers AnalysisLevel below the standard
 ESTD005

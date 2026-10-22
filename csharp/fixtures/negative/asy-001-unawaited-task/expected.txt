@@ -1,0 +1,4 @@
+# rule: ASY-001
+# mechanism: compiler
+# summary: Task started inside an async method and never awaited
+CS4014

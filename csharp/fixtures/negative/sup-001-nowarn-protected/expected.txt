@@ -1,0 +1,4 @@
+# rule: SUP-001
+# mechanism: msbuild-guard
+# summary: Protected diagnostic silenced project-wide through NoWarn
+ESTD002

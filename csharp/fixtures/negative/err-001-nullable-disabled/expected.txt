@@ -1,0 +1,4 @@
+# rule: ERR-001
+# mechanism: msbuild-guard
+# summary: Project opts out of nullable analysis
+ESTD001

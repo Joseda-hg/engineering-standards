@@ -1,0 +1,4 @@
+# rule: ERR-001
+# mechanism: analyzer
+# summary: catch (Exception) swallows every failure
+CA1031

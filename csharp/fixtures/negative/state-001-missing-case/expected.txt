@@ -1,0 +1,5 @@
+# rule: STATE-001
+# mechanism: compiler
+# summary: Switch expression misses a named enum member (the compiler and IDE0072 both report it)
+CS8509
+IDE0072

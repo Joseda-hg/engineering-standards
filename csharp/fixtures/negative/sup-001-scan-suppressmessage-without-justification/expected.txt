@@ -1,0 +1,4 @@
+# rule: SUP-001
+# mechanism: scan
+# summary: [SuppressMessage] without a justification and reference
+SUP001

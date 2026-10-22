@@ -1,0 +1,4 @@
+# rule: SUP-001
+# mechanism: scan
+# summary: Repository .editorconfig silently downgrades a protected diagnostic
+SUP001

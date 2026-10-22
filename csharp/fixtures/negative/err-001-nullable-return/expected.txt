@@ -1,0 +1,4 @@
+# rule: ERR-001
+# mechanism: compiler
+# summary: Returning a possibly-null value from a non-nullable signature
+CS8603

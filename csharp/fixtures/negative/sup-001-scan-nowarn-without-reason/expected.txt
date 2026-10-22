@@ -1,0 +1,4 @@
+# rule: SUP-001
+# mechanism: scan
+# summary: NoWarn added in a project file without a reason and reference
+SUP001

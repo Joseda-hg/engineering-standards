@@ -1,0 +1,4 @@
+# rule: ERR-001
+# mechanism: compiler
+# summary: Dereferencing a possibly-null value
+CS8602

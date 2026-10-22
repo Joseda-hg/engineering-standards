@@ -1,0 +1,4 @@
+# rule: SAFE-001
+# mechanism: msbuild-guard
+# summary: AllowUnsafeBlocks without a recorded justification
+ESTD004

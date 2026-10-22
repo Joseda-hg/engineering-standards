@@ -1,0 +1,4 @@
+# rule: ASY-001
+# mechanism: analyzer
+# summary: Blocking through GetAwaiter().GetResult()
+RS0030

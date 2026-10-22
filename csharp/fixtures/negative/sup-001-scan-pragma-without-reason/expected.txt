@@ -1,0 +1,4 @@
+# rule: SUP-001
+# mechanism: scan
+# summary: #pragma warning disable without a reason and reference
+SUP001

@@ -1,0 +1,4 @@
+# rule: ASY-001
+# mechanism: analyzer
+# summary: CancellationToken parameter not forwarded
+CA2016

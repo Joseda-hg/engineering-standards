@@ -1,0 +1,4 @@
+# rule: ASY-001
+# mechanism: analyzer
+# summary: Blocking on Task<T>.Result / ValueTask<T>.Result
+RS0030

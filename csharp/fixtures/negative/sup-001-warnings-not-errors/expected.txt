@@ -1,0 +1,4 @@
+# rule: SUP-001
+# mechanism: msbuild-guard
+# summary: Project turns TreatWarningsAsErrors off under the strict profile
+ESTD003

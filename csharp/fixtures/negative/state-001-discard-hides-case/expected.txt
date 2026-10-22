@@ -1,0 +1,4 @@
+# rule: STATE-001
+# mechanism: analyzer
+# summary: Discard arm hides enum members from exhaustiveness checking
+IDE0072

@@ -1,0 +1,5 @@
+# rule: ERR-002
+# mechanism: analyzer
+# summary: as casts that can silently truncate
+clippy::as_conversions
+clippy::cast_possible_truncation

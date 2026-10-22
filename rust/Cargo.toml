@@ -20,16 +20,35 @@ publish = false
 
 [workspace.lints.rust]
 # SAFE-001: exceptions use #[expect(unsafe_code, reason = "...")] plus a `// SAFETY:` comment.
+# Crates that need no unsafe code should also declare #![forbid(unsafe_code)].
 unsafe_code = "warn"
 # ERR-001 / ASY-001: ignored Result values and un-awaited futures.
 unused_must_use = "warn"
 
 [workspace.lints.clippy]
 all = { level = "warn", priority = -1 }
+# IDIOM-001: pedantic and nursery teach idiomatic Rust. Nursery lints may have false positives;
+# answer those with #[expect(clippy::..., reason = "...")], never by disabling the group.
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+enum_glob_use = "warn"
 # ERR-001: no unwrap/expect in production paths (allowed in tests via clippy.toml).
 unwrap_used = "warn"
 expect_used = "warn"
-# API-001: paths configured in clippy.toml.
+# ERR-002: no crash paths in production code (panics are allowed in tests via clippy.toml).
+panic = "warn"
+panic_in_result_fn = "warn"
+todo = "warn"
+unimplemented = "warn"
+unreachable = "warn"
+exit = "warn"
+indexing_slicing = "warn"
+string_slice = "warn"
+arithmetic_side_effects = "warn"
+as_conversions = "warn"
+# Renamed to unchecked_time_subtraction in later Clippy releases.
+unchecked_duration_subtraction = "warn"
+# API-001 / ASY-002: paths configured in clippy.toml.
 disallowed_methods = "warn"
 # STATE-001: a wildcard arm on an enum hides newly added variants.
 wildcard_enum_match_arm = "warn"

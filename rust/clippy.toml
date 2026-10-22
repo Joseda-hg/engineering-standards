@@ -1,10 +1,13 @@
 # Engineering Standards - Clippy configuration. Copy to the consuming workspace root.
 # Every disallowed path is exercised by a negative fixture under rust/fixtures/negative/.
 
-# ERR-001: unwrap/expect are acceptable in tests.
+# ERR-001 / ERR-002: prototyping-style code is acceptable in tests.
 allow-unwrap-in-tests = true
 allow-expect-in-tests = true
+allow-panic-in-tests = true
+allow-indexing-slicing-in-tests = true
 
 disallowed-methods = [
   { path = "std::time::SystemTime::now", reason = "API-001: inject a clock; read the wall clock only in one sanctioned adapter" },
+  { path = "std::thread::spawn", reason = "ASY-002: use std::thread::scope (or rayon) so threads are joined and may borrow" },
 ]

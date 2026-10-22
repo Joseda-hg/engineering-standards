@@ -1,0 +1,4 @@
+# rule: ERR-002
+# mechanism: analyzer
+# summary: todo! left in production code
+clippy::todo

@@ -1,0 +1,4 @@
+# rule: ASY-002
+# mechanism: analyzer
+# summary: Unscoped std::thread::spawn instead of std::thread::scope
+clippy::disallowed_methods

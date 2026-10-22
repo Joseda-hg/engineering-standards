@@ -1,4 +1,9 @@
+/// Returns the first value.
+///
+/// # Panics
+///
+/// Panics when `values` is empty.
 #[must_use]
-pub fn first(values: &[u32]) -> u32 {
+pub const fn first(values: &[u32]) -> u32 {
     *values.first().expect("at least one value")
 }

@@ -5,7 +5,7 @@ pub enum Light {
 }
 
 #[must_use]
-pub fn instruction(light: &Light) -> &'static str {
+pub const fn instruction(light: &Light) -> &'static str {
     match light {
         Light::Red => "stop",
         _ => "go",

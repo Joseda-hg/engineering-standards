@@ -1,0 +1,4 @@
+# rule: ERR-002
+# mechanism: analyzer
+# summary: process::exit outside main skips destructors and error handling
+clippy::exit

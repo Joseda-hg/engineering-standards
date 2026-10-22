@@ -1,7 +1,9 @@
-async fn work() -> u32 {
-    42
+use std::future::{Ready, ready};
+
+async fn work(input: Ready<u32>) -> u32 {
+    input.await
 }
 
 pub fn start() {
-    work();
+    work(ready(42));
 }

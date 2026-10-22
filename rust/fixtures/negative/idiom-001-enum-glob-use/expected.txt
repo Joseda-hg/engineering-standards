@@ -1,0 +1,4 @@
+# rule: IDIOM-001
+# mechanism: analyzer
+# summary: Glob import of enum variants hides where names come from
+clippy::enum_glob_use

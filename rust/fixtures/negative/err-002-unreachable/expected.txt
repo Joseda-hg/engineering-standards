@@ -1,0 +1,4 @@
+# rule: ERR-002
+# mechanism: analyzer
+# summary: unreachable! instead of modelling the impossible state away
+clippy::unreachable

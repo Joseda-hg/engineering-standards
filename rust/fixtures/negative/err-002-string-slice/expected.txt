@@ -1,0 +1,4 @@
+# rule: ERR-002
+# mechanism: analyzer
+# summary: String slicing that can panic on a char boundary
+clippy::string_slice

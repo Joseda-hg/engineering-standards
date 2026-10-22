@@ -1,0 +1,4 @@
+# rule: ERR-002
+# mechanism: analyzer
+# summary: Function returning Result can still panic (assert!)
+clippy::panic_in_result_fn

@@ -1,0 +1,5 @@
+# rule: ERR-002
+# mechanism: analyzer
+# summary: Instant minus Duration can panic on underflow
+clippy::arithmetic_side_effects
+clippy::unchecked_duration_subtraction

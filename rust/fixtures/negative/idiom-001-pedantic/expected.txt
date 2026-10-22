@@ -1,0 +1,4 @@
+# rule: IDIOM-001
+# mechanism: analyzer
+# summary: A pedantic lint fires, proving the pedantic group is enabled
+clippy::semicolon_if_nothing_returned

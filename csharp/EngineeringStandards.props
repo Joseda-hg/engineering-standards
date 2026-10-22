@@ -5,7 +5,7 @@
     from its Directory.Build.targets. See ADOPTION.md.
   -->
   <PropertyGroup>
-    <EngineeringStandardsVersion>0.2.0</EngineeringStandardsVersion>
+    <EngineeringStandardsVersion>0.3.0</EngineeringStandardsVersion>
     <!-- baseline: diagnostics are warnings. strict: warnings are errors and the guard rails are enforced. -->
     <EngineeringStandardsProfile Condition="'$(EngineeringStandardsProfile)' == ''">baseline</EngineeringStandardsProfile>
     <!-- Diagnostic IDs that projects must not silence through NoWarn / WarningsNotAsErrors (SUP-001). -->

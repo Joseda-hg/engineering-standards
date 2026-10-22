@@ -13,6 +13,11 @@ This repository defines reusable *policy*, not consumer application behaviour.
   relaxations merely to make checks pass. Exceptions follow `docs/exceptions.md`.
 - Keep `rust/Cargo.toml` lint tables identical to `rust/workspace-lints.toml`.
 - Never run `quality-fix` / formatters against `*/fixtures/negative` - those files are wrong on purpose.
+- Record significant decisions as an ADR in `docs/adr/` (DOC-001).
+- AI-001: disclose your assistance level in the PR template; a human must read and own every line.
+  Agents never merge, tag or publish.
+- Write code that cannot crash (ERR-002): no `unwrap`/`expect`/`panic!`/indexing in production Rust,
+  no `NotImplementedException`/`Environment.Exit` in C#. Prototype inside tests.
 - Keep shared rules language-neutral; document limits and exceptions per language.
 - Never modify PacificGold or its `upgrade/latest-platform` branch, and do not start PEN-0040 here.
 - Version policy changes (VERSIONING.md); consumers pin a tested version. Do not publish or push

@@ -2,6 +2,34 @@
 
 All notable changes. Versioning rules: [VERSIONING.md](VERSIONING.md).
 
+## [0.3.0] - 2026-10-22
+
+Codifies the No Boilerplate recommendations ([ADR 0002](docs/adr/0002-adopt-no-boilerplate-recommendations.md)).
+Expect many new diagnostics in existing code: adopt through the baseline profile.
+
+### Added
+- **ERR-002** no crash paths. Rust: `panic`, `panic_in_result_fn`, `todo`, `unimplemented`,
+  `unreachable`, `exit`, `indexing_slicing`, `string_slice`, `arithmetic_side_effects`,
+  `as_conversions`, `unchecked_duration_subtraction`; tests exempt via `allow-panic-in-tests` and
+  `allow-indexing-slicing-in-tests`. C#: banned `NotImplementedException` constructors and
+  `Environment.Exit`/`FailFast`; `CA2201`.
+- **IDIOM-001** Clippy `pedantic` + `nursery` groups and `enum_glob_use`.
+- **ASY-002** structured concurrency: `std::thread::spawn` disallowed; `Thread` constructors and
+  `ThreadPool` queueing banned in C#.
+- **FUNC-001** `CA1822`, `IDE0044`; Rust `missing_const_for_fn` (nursery).
+- **STATE-001** `IDE0010` for switch statements.
+- **MODEL-001**, **TEST-001**, **AI-001** policies; **DOC-001** ADRs in `docs/adr/` checked by
+  `scripts/check-adrs.sh` (`ADR001`); PR template with AI-assistance level.
+- Positive fixtures: typestate in both languages (Rust `compile_fail` doctest, C# `CS1061` fixture),
+  scoped-thread parallelism, doctests, `proptest` and CsCheck property tests,
+  `#![forbid(unsafe_code)]`.
+- 24 new negative fixtures (Rust 15, C# 8, docs 1); `docs/developer-workflow.md`.
+
+### Changed
+- Existing Rust and C# fixtures tightened so each still fails with exactly one diagnostic under the
+  stricter lint set.
+- New protected C# diagnostics: `IDE0010`, `CA2201`, `CA1822`, `IDE0044`.
+
 ## [0.2.0] - 2026-10-22
 
 First validated release: every automated rule is proven by a negative fixture on pinned toolchains

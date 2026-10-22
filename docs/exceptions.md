@@ -42,9 +42,9 @@ dotnet_diagnostic.CA1707.severity = none
 ```
 
 Protected diagnostics (`EngineeringStandardsProtectedDiagnostics`): `nullable`, `CS8509`, `CS4014`,
-`CS0227`, `RS0030`, `CA1031`, `CA2016`, `IDE0055`, `IDE0072`. They can still be suppressed locally
-(attribute or `#pragma`), never project-wide. A consumer can extend the list by appending to the
-property.
+`CS0227`, `RS0030`, `CA1031`, `CA2016`, `IDE0055`, `IDE0072`, `IDE0010`, `CA2201`, `CA1822`,
+`IDE0044`. They can still be suppressed locally (attribute or `#pragma`), never project-wide.
+A consumer can extend the list by appending to the property.
 
 ## Rust
 
@@ -61,6 +61,16 @@ pub fn read(value: &u32) -> u32 {
     // SAFETY: `pointer` comes from a valid reference.
     unsafe { *pointer }
 }
+```
+
+Nursery lints may be wrong; say so locally rather than disabling the group (IDIOM-001):
+
+```rust
+#[expect(
+    clippy::needless_collect,
+    reason = "IDIOM-001: nursery false positive - collecting spawns every worker before the first join"
+)]
+let workers: Vec<_> = lots.chunks(n).map(|chunk| scope.spawn(move || total(chunk))).collect();
 ```
 
 Crates must keep `[lints] workspace = true`; crate-local `[lints.*]` tables are reported by the scan.

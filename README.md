@@ -3,7 +3,7 @@
 Versioned, language-neutral engineering policies with native, tested enforcement for **C# (.NET 10)**
 and **Rust**.
 
-> Status: **v0.2.0**. Every rule marked as automated is proven by a negative fixture that must fail
+> Status: **v0.3.0**. Every rule marked as automated is proven by a negative fixture that must fail
 > with exactly the expected diagnostics; see [docs/rule-coverage.md](docs/rule-coverage.md) for what
 > is and is not automated. Adoption is opt-in and pinned per consumer ([ADOPTION.md](ADOPTION.md)).
 
@@ -16,6 +16,8 @@ and **Rust**.
 3. Toolchains are pinned; diagnostics from different versions are not comparable.
 4. Suppressions are narrow, justified and referenced; shared configuration is never relaxed to make a
    build pass.
+5. Code does not crash: failure is a value, crash paths are lint errors, and invalid states are made
+   unrepresentable in the model (after No Boilerplate; see ADR 0002).
 
 ## Commands
 
@@ -29,6 +31,7 @@ and rustup (the Rust version comes from `rust/rust-toolchain.toml`).
 | `just quality-report` | Everything above, written to `reports/quality-report.md` with a rule-coverage matrix |
 | `just fixtures [csharp\|rust]` | Negative fixtures only |
 | `just scan` | Suppression scan only |
+| `just adrs` | ADR format check only |
 
 `scripts/quality.sh {csharp|rust} PATH [--fix]` is the same checker for consumer repositories.
 
@@ -44,7 +47,9 @@ and rustup (the Rust version comes from `rust/rust-toolchain.toml`).
 | `rust/fixtures/{positive,negative}` | Positive crate and one crate per violation |
 | `scripts/` | `quality.sh`, `verify-fixtures.sh`, `scan-suppressions.sh`, `quality-report.sh` |
 | `profiles/` | What `baseline` / `strict` / `legacy` mean and which switches select them |
-| `docs/` | Rule coverage, exceptions, validation results |
+| `docs/` | Rule coverage, exceptions, developer workflow, validation results |
+| `docs/adr/` | Architecture Decision Records (checked by `scripts/check-adrs.sh`) |
+| `fixtures/negative` | Language-neutral negative fixtures (ADR format) |
 | `agents/AGENTS.md` | Instructions for AI coding agents |
 
 The fixtures sit *under* the shipped configuration so they pick it up through the same discovery a
@@ -55,6 +60,8 @@ workspace lint tables are drift-checked against `rust/workspace-lints.toml`.
 
 - [docs/rule-coverage.md](docs/rule-coverage.md) - compiler vs analyzer vs guard vs scan vs convention, and known gaps
 - [docs/exceptions.md](docs/exceptions.md) - how to suppress correctly in each language
+- [docs/adr/](docs/adr/) - decisions, including [0002: adopting the No Boilerplate recommendations](docs/adr/0002-adopt-no-boilerplate-recommendations.md)
+- [docs/developer-workflow.md](docs/developer-workflow.md) - compiler-driven development loop and optional tools
 - [ADOPTION.md](ADOPTION.md) - distribution, wiring and progressive rollout
 - [VERSIONING.md](VERSIONING.md) and [CHANGELOG.md](CHANGELOG.md)
 - [docs/validation-results.md](docs/validation-results.md) - recorded runs, findings and next steps

@@ -23,13 +23,21 @@ fixtures that actually ran; this page explains it.
 | Rule | C# | Rust |
 | --- | --- | --- |
 | **ERR-001** failure and absence are explicit | compiler `CS8602`, `CS8603` · analyzer `CA1031` · guard `ESTD001` (Nullable must be `enable`) · scan `#nullable disable` | analyzer `clippy::unwrap_used`, `clippy::expect_used` (allowed in tests) · compiler `unused_must_use` (ignored `Result`) |
+| **ERR-002** no crash paths | analyzer `RS0030`: all 3 `NotImplementedException` constructors, `Environment.Exit`, both `Environment.FailFast` overloads · analyzer `CA2201` (reserved exception types) | analyzer `clippy::panic`, `panic_in_result_fn`, `todo`, `unimplemented`, `unreachable`, `exit`, `indexing_slicing`, `string_slice`, `arithmetic_side_effects`, `as_conversions`, `unchecked_duration_subtraction` (tests exempt via `clippy.toml`) |
 | **ASY-001** no sync-over-async | analyzer `RS0030`: `Task<T>.Result`, `ValueTask<T>.Result`, all 18 `Task.Wait`/`WaitAll`/`WaitAny` overloads, all 8 awaiter `GetResult()` variants (including `ConfigureAwait(false)`) · compiler `CS4014` · analyzer `CA2016` | compiler `unused_must_use` (future never awaited) |
+| **ASY-002** structured concurrency | analyzer `RS0030`: all 4 `Thread` constructors and all 6 `ThreadPool.(Unsafe)QueueUserWorkItem` overloads | analyzer `clippy::disallowed_methods`: `std::thread::spawn` |
 | **API-001** no ambient wall clock | analyzer `RS0030`: `DateTime.Now/UtcNow/Today`, `DateTimeOffset.Now/UtcNow` | analyzer `clippy::disallowed_methods`: `std::time::SystemTime::now` |
-| **STATE-001** exhaustive state handling | compiler `CS8509` · analyzer `IDE0072` (every member listed even when a discard exists) | compiler `E0004` · analyzer `clippy::wildcard_enum_match_arm` |
+| **STATE-001** exhaustive state handling | compiler `CS8509` · analyzer `IDE0072` (every member listed even when a discard exists) · analyzer `IDE0010` (switch statements) | compiler `E0004` · analyzer `clippy::wildcard_enum_match_arm` |
 | **SUP-001** suppressions are narrow and justified | guard `ESTD002` (protected IDs in `NoWarn`/`WarningsNotAsErrors`), `ESTD003` (`TreatWarningsAsErrors` off), `ESTD005` (analyzers off or weakened) · scan `SUP001`: `#pragma warning disable`, `#nullable disable`, `[SuppressMessage]`, `.editorconfig` severity downgrades, `NoWarn` without a reference | analyzer `clippy::allow_attributes`, `clippy::allow_attributes_without_reason` · scan `SUP001`: crate does not inherit workspace lints |
 | **SAFE-001** no unreviewed unsafe code | compiler `CS0227` · guard `ESTD004` (`AllowUnsafeBlocks` needs a justification) | compiler lint `unsafe_code` · analyzer `clippy::undocumented_unsafe_blocks` |
 | **FMT-001** consistent formatting | analyzer `IDE0055` in the build · `dotnet format whitespace --verify-no-changes` in `quality.sh` (no negative fixture of its own) | formatter `rustfmt --check` |
 | **DOMAIN-001** typed identities and units | convention (positive fixtures show `readonly record struct`) | convention (positive fixture shows newtypes) |
+| **MODEL-001** invalid states unrepresentable | convention · compiler `CS1061` proves the typestate model rejects an invalid transition | convention · `compile_fail` doctest in the positive fixture |
+| **FUNC-001** pure core, immutable data | analyzer `CA1822` (static members), `IDE0044` (readonly fields) | analyzer `clippy::missing_const_for_fn` |
+| **IDIOM-001** the linter teaches | `AnalysisLevel=latest-all` + `ESTD005` (see SUP-001) | analyzer: a `pedantic` lint and a `nursery` lint fire (groups active) · `clippy::enum_glob_use` |
+| **TEST-001** test in layers | convention (CsCheck property tests in the positive fixture) | convention (doctest, `compile_fail` doctest, unit, integration and `proptest` tests in the positive fixture) |
+| **DOC-001** decisions as ADRs | scan `ADR001` (`scripts/check-adrs.sh`), language-neutral | same |
+| **AI-001** humans own every change | convention (PR template) | same |
 
 Profiles are verified too: under `baseline` the same violations are reported as warnings with exit
 code 0 (`profile-baseline` checks in the harness).
@@ -55,10 +63,11 @@ examples that run without a dedicated fixture: `CA1849` (sync call inside async 
 | `async void` methods | ASY-001 | No built-in analyzer; `Microsoft.VisualStudio.Threading.Analyzers` (`VSTHRD100`) would add it |
 | Blocking calls inside Rust `async fn` | ASY-001 | No stable lint; needs runtime-specific lints or review |
 | `let _ = result;` in Rust | ERR-001 | `clippy::let_underscore_must_use` (restriction) not enabled yet |
-| Panics other than unwrap/expect (`panic!`, indexing) | ERR-001 | `clippy::panic`, `clippy::indexing_slicing` not enabled yet |
+| Unchecked indexing, overflow and narrowing casts in C# | ERR-002 | No built-in analyzer; review |
+| `_ = Task.Run(...)` fire-and-forget, detached async tasks | ASY-002 | Not detectable with symbol bans |
+| Purity in general (a `static` method can still do I/O) | FUNC-001 | Review |
 | Layering (e.g. `DbContext` in UI), raw SQL | API-001 | Symbol bans cannot express layers; needs architecture tests (NetArchTest, ArchUnitNET) |
 | Clocks from third-party crates (`chrono::Utc::now`) | API-001 | Add the paths to the consumer's `clippy.toml` when the crate is a dependency |
-| C# `switch` *statements* | STATE-001 | `IDE0010` not enabled yet |
 | Quality of the reason text | SUP-001 | Any text matching `[A-Z][A-Z0-9]+-[0-9]+` is accepted |
 | `RUSTFLAGS` / `.cargo/config.toml` lint overrides | SUP-001 | Not scanned yet |
 | Multi-line `#pragma` constructs or unusual formatting | SUP-001 | The scan is line-oriented |

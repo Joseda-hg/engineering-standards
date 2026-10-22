@@ -76,6 +76,10 @@ repository; files in this repository do not affect another one.
 | 3. Promote | Switch the project (or the folder's `Directory.Build.props`) to `strict` | Opt the crate in | Strict in CI |
 | 4. Repository-wide strict | Set `strict` in the root `Directory.Build.props` | All members opted in, `-D warnings` everywhere | Whole repository green |
 
+Since v0.3.0 the Rust lints include Clippy's `pedantic` and `nursery` groups and the full ERR-002
+panic set, which typically produce hundreds of findings in an existing crate. Many are auto-fixable
+(`cargo clippy --fix`); start in the baseline profile and remediate one lint at a time.
+
 Inventory command for C#:
 
 ```bash

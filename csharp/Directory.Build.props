@@ -1,9 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Nullable>enable</Nullable>
-    <AnalysisLevel>latest-all</AnalysisLevel>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <!-- Adoption: set true only after legacy diagnostics are cleaned / scoped. -->
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <EngineeringStandardsProfile>strict</EngineeringStandardsProfile>
   </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)EngineeringStandards.props" />
 </Project>

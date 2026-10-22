@@ -1,0 +1,29 @@
+# Engineering Standards - analyzer severities (global analyzer config).
+# Applies to every file in a project regardless of location; wired by EngineeringStandards.props.
+# A repository .editorconfig entry overrides these values; such overrides are reported by
+# scripts/scan-suppressions.sh (SUP-001).
+is_global = true
+global_level = 100
+
+# STATE-001 - exhaustive state handling.
+# CS8509: a switch expression misses a named case.
+dotnet_diagnostic.CS8509.severity = warning
+# IDE0072: every named enum member must be listed, even when a discard arm exists. The discard arm
+# is reserved for out-of-range numeric values and should throw ArgumentOutOfRangeException.
+# (CS8524 keeps its default severity: an explicit throwing discard satisfies it.)
+dotnet_diagnostic.IDE0072.severity = warning
+
+# ASY-001 - no sync-over-async.
+# CS4014: un-awaited task inside an async method.
+dotnet_diagnostic.CS4014.severity = warning
+# CA2016: forward the CancellationToken parameter.
+dotnet_diagnostic.CA2016.severity = warning
+
+# API-001 / ASY-001 - banned symbols listed in BannedSymbols.txt.
+dotnet_diagnostic.RS0030.severity = warning
+
+# ERR-001 - do not swallow every exception.
+dotnet_diagnostic.CA1031.severity = warning
+
+# FMT-001 - formatting is part of the build (honours .editorconfig formatting options).
+dotnet_diagnostic.IDE0055.severity = warning

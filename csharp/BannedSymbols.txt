@@ -1,4 +1,20 @@
-# Starter placeholder — do not wire into analyzers until the exact symbol names,
-# compatibility and exception policy have been verified using negative fixtures.
-# Sample syntax for Microsoft.CodeAnalysis.BannedApiAnalyzers:
-# T:System.DateTime; Use an injectable time source where determinism matters.
+# Engineering Standards - banned symbols for Microsoft.CodeAnalysis.BannedApiAnalyzers (RS0030).
+# Every entry is exercised by a negative fixture under csharp/fixtures/negative/.
+# Format: <documentation comment ID>; <reason shown in the diagnostic>
+
+# API-001 - wall-clock statics make domain logic non-deterministic. Inject TimeProvider.
+P:System.DateTime.Now; API-001: inject TimeProvider and call GetLocalNow()
+P:System.DateTime.UtcNow; API-001: inject TimeProvider and call GetUtcNow()
+P:System.DateTime.Today; API-001: inject TimeProvider and derive the date from it
+P:System.DateTimeOffset.Now; API-001: inject TimeProvider and call GetLocalNow()
+P:System.DateTimeOffset.UtcNow; API-001: inject TimeProvider and call GetUtcNow()
+
+# ASY-001 - blocking on tasks (sync-over-async). Use await.
+P:System.Threading.Tasks.Task`1.Result; ASY-001: await the task instead of blocking on Result
+P:System.Threading.Tasks.ValueTask`1.Result; ASY-001: await the task instead of blocking on Result
+M:System.Threading.Tasks.Task.Wait; ASY-001: await the task instead of blocking on Wait()
+M:System.Threading.Tasks.Task.WaitAll; ASY-001: use await Task.WhenAll
+M:System.Threading.Tasks.Task.WaitAny; ASY-001: use await Task.WhenAny
+M:System.Runtime.CompilerServices.TaskAwaiter.GetResult; ASY-001: await the task instead of GetAwaiter().GetResult()
+M:System.Runtime.CompilerServices.TaskAwaiter`1.GetResult; ASY-001: await the task instead of GetAwaiter().GetResult()
+M:System.Runtime.CompilerServices.ValueTaskAwaiter`1.GetResult; ASY-001: await the task instead of GetAwaiter().GetResult()

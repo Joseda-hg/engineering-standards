@@ -1,0 +1,33 @@
+<Project>
+  <!--
+    Engineering Standards for C# - shared MSBuild defaults.
+    Import from the consumer's Directory.Build.props, and import EngineeringStandards.targets
+    from its Directory.Build.targets. See ADOPTION.md.
+  -->
+  <PropertyGroup>
+    <EngineeringStandardsVersion>0.2.0</EngineeringStandardsVersion>
+    <!-- baseline: diagnostics are warnings. strict: warnings are errors and the guard rails are enforced. -->
+    <EngineeringStandardsProfile Condition="'$(EngineeringStandardsProfile)' == ''">baseline</EngineeringStandardsProfile>
+    <!-- Diagnostic IDs that projects must not silence through NoWarn / WarningsNotAsErrors (SUP-001). -->
+    <EngineeringStandardsProtectedDiagnostics>$(EngineeringStandardsProtectedDiagnostics);nullable;CS8509;CS4014;CS0227;RS0030;CA1031;CA2016;IDE0055;IDE0072</EngineeringStandardsProtectedDiagnostics>
+    <BannedApiAnalyzersVersion Condition="'$(BannedApiAnalyzersVersion)' == ''">5.6.0</BannedApiAnalyzersVersion>
+
+    <Nullable>enable</Nullable>
+    <AnalysisLevel>latest-all</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(EngineeringStandardsProfile)' == 'strict'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <MSBuildTreatWarningsAsErrors>true</MSBuildTreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory)EngineeringStandards.globalconfig" />
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)BannedSymbols.txt" />
+    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="$(BannedApiAnalyzersVersion)" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+  </ItemGroup>
+</Project>

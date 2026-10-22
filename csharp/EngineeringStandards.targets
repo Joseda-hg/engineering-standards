@@ -1,0 +1,25 @@
+<Project>
+  <!--
+    Guard rails evaluated after the project file, so they see the project's final property values.
+    Codes ESTD001..ESTD004 are emitted here; see policies/README.md.
+  -->
+  <Target Name="EngineeringStandardsValidate" BeforeTargets="CoreCompile" Condition="'$(EngineeringStandardsProfile)' == 'strict'">
+    <PropertyGroup>
+      <_EstdNoWarn>;$(NoWarn.Replace(',', ';').Replace(' ', ''));</_EstdNoWarn>
+      <_EstdNotAsErrors>;$(WarningsNotAsErrors.Replace(',', ';').Replace(' ', ''));</_EstdNotAsErrors>
+    </PropertyGroup>
+    <ItemGroup>
+      <_EstdProtected Include="$(EngineeringStandardsProtectedDiagnostics)" />
+      <_EstdSilenced Include="@(_EstdProtected)" Condition="$(_EstdNoWarn.Contains(';%(Identity);')) or $(_EstdNotAsErrors.Contains(';%(Identity);'))" />
+    </ItemGroup>
+
+    <Error Code="ESTD001" Condition="'$(Nullable)' != 'enable'"
+           Text="ERR-001: Nullable must be 'enable' under the strict profile (found '$(Nullable)')." />
+    <Error Code="ESTD002" Condition="'@(_EstdSilenced)' != ''"
+           Text="SUP-001: protected diagnostics may not be silenced through NoWarn/WarningsNotAsErrors: @(_EstdSilenced). Use a scoped, justified suppression instead." />
+    <Error Code="ESTD003" Condition="'$(TreatWarningsAsErrors)' != 'true'"
+           Text="SUP-001: TreatWarningsAsErrors must stay 'true' under the strict profile." />
+    <Error Code="ESTD004" Condition="'$(AllowUnsafeBlocks)' == 'true' and '$(EngineeringStandardsUnsafeJustification)' == ''"
+           Text="SAFE-001: AllowUnsafeBlocks requires an EngineeringStandardsUnsafeJustification property (reason and issue reference)." />
+  </Target>
+</Project>

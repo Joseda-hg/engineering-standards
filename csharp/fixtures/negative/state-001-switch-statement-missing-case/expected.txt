@@ -1,0 +1,4 @@
+# rule: STATE-001
+# mechanism: analyzer
+# summary: switch statement does not list every enum member
+IDE0010

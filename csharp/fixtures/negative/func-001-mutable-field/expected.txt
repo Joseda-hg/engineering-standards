@@ -1,0 +1,4 @@
+# rule: FUNC-001
+# mechanism: analyzer
+# summary: Field assigned only at construction but not readonly
+IDE0044

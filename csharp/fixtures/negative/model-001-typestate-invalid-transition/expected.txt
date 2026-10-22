@@ -1,0 +1,4 @@
+# rule: MODEL-001
+# mechanism: compiler
+# summary: Typestate model rejects an invalid transition (shipping an unpaid order) at compile time
+CS1061

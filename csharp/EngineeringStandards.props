@@ -9,7 +9,7 @@
     <!-- baseline: diagnostics are warnings. strict: warnings are errors and the guard rails are enforced. -->
     <EngineeringStandardsProfile Condition="'$(EngineeringStandardsProfile)' == ''">baseline</EngineeringStandardsProfile>
     <!-- Diagnostic IDs that projects must not silence through NoWarn / WarningsNotAsErrors (SUP-001). -->
-    <EngineeringStandardsProtectedDiagnostics>$(EngineeringStandardsProtectedDiagnostics);nullable;CS8509;CS4014;CS0227;RS0030;CA1031;CA2016;IDE0055;IDE0072</EngineeringStandardsProtectedDiagnostics>
+    <EngineeringStandardsProtectedDiagnostics>$(EngineeringStandardsProtectedDiagnostics);nullable;CS8509;CS4014;CS0227;RS0030;CA1031;CA2016;IDE0055;IDE0072;IDE0010;CA2201;CA1822;IDE0044</EngineeringStandardsProtectedDiagnostics>
     <BannedApiAnalyzersVersion Condition="'$(BannedApiAnalyzersVersion)' == ''">5.6.0</BannedApiAnalyzersVersion>
 
     <Nullable>enable</Nullable>

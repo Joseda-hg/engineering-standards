@@ -1,0 +1,4 @@
+# rule: FUNC-001
+# mechanism: analyzer
+# summary: Instance member that uses no instance state (should be a static, pure function)
+CA1822

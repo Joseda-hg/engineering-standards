@@ -1,0 +1,4 @@
+# rule: ASY-002
+# mechanism: analyzer
+# summary: Raw threads and fire-and-forget thread-pool work (every overload)
+RS0030 10

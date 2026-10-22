@@ -12,6 +12,8 @@ dotnet_diagnostic.CS8509.severity = warning
 # is reserved for out-of-range numeric values and should throw ArgumentOutOfRangeException.
 # (CS8524 keeps its default severity: an explicit throwing discard satisfies it.)
 dotnet_diagnostic.IDE0072.severity = warning
+# IDE0010: the same for switch *statements* ("prefer match over if": model the cases, list them all).
+dotnet_diagnostic.IDE0010.severity = warning
 
 # ASY-001 - no sync-over-async.
 # CS4014: un-awaited task inside an async method.
@@ -24,6 +26,15 @@ dotnet_diagnostic.RS0030.severity = warning
 
 # ERR-001 - do not swallow every exception.
 dotnet_diagnostic.CA1031.severity = warning
+
+# ERR-002 - failures are specific and expected: never throw System.Exception & co.
+dotnet_diagnostic.CA2201.severity = warning
+
+# FUNC-001 - pure core, immutable data.
+# CA1822: a member that touches no instance state is static (and is a candidate pure function).
+dotnet_diagnostic.CA1822.severity = warning
+# IDE0044: a field assigned only at construction is readonly.
+dotnet_diagnostic.IDE0044.severity = warning
 
 # FMT-001 - formatting is part of the build (honours .editorconfig formatting options).
 dotnet_diagnostic.IDE0055.severity = warning

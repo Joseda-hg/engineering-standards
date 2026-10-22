@@ -1,0 +1,4 @@
+# rule: ERR-002
+# mechanism: analyzer
+# summary: Throwing System.Exception instead of a specific exception type
+CA2201

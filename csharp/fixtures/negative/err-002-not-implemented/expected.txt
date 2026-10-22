@@ -1,0 +1,4 @@
+# rule: ERR-002
+# mechanism: analyzer
+# summary: NotImplementedException left as a placeholder (every constructor)
+RS0030 3

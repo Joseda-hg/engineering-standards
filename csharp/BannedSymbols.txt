@@ -40,3 +40,24 @@ M:System.Runtime.CompilerServices.ConfiguredTaskAwaitable.ConfiguredTaskAwaiter.
 M:System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult; ASY-001: await the task instead of GetAwaiter().GetResult()
 M:System.Runtime.CompilerServices.ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter.GetResult; ASY-001: await the task instead of GetAwaiter().GetResult()
 M:System.Runtime.CompilerServices.ConfiguredValueTaskAwaitable`1.ConfiguredValueTaskAwaiter.GetResult; ASY-001: await the task instead of GetAwaiter().GetResult()
+
+# ERR-002 - no crash paths in production code (No Boilerplate, "Rust: Don't Panic").
+# NotImplementedException is C#'s todo!(); Environment.Exit/FailFast is process::exit.
+M:System.NotImplementedException.#ctor; ERR-002: placeholder left in production code - implement it or model the case away
+M:System.NotImplementedException.#ctor(System.String); ERR-002: placeholder left in production code - implement it or model the case away
+M:System.NotImplementedException.#ctor(System.String,System.Exception); ERR-002: placeholder left in production code - implement it or model the case away
+M:System.Environment.Exit(System.Int32); ERR-002: return an exit code from Main instead of terminating from deep inside the program
+M:System.Environment.FailFast(System.String); ERR-002: return an exit code from Main instead of terminating from deep inside the program
+M:System.Environment.FailFast(System.String,System.Exception); ERR-002: return an exit code from Main instead of terminating from deep inside the program
+
+# ASY-002 - structured concurrency: work that is started must be awaited or joined.
+M:System.Threading.Thread.#ctor(System.Threading.ThreadStart); ASY-002: use Task.Run + await, or Parallel.ForEach, so the work is joined
+M:System.Threading.Thread.#ctor(System.Threading.ThreadStart,System.Int32); ASY-002: use Task.Run + await, or Parallel.ForEach, so the work is joined
+M:System.Threading.Thread.#ctor(System.Threading.ParameterizedThreadStart); ASY-002: use Task.Run + await, or Parallel.ForEach, so the work is joined
+M:System.Threading.Thread.#ctor(System.Threading.ParameterizedThreadStart,System.Int32); ASY-002: use Task.Run + await, or Parallel.ForEach, so the work is joined
+M:System.Threading.ThreadPool.QueueUserWorkItem(System.Threading.WaitCallback); ASY-002: fire-and-forget work is never joined; use Task.Run + await
+M:System.Threading.ThreadPool.QueueUserWorkItem(System.Threading.WaitCallback,System.Object); ASY-002: fire-and-forget work is never joined; use Task.Run + await
+M:System.Threading.ThreadPool.QueueUserWorkItem``1(System.Action{``0},``0,System.Boolean); ASY-002: fire-and-forget work is never joined; use Task.Run + await
+M:System.Threading.ThreadPool.UnsafeQueueUserWorkItem(System.Threading.WaitCallback,System.Object); ASY-002: fire-and-forget work is never joined; use Task.Run + await
+M:System.Threading.ThreadPool.UnsafeQueueUserWorkItem``1(System.Action{``0},``0,System.Boolean); ASY-002: fire-and-forget work is never joined; use Task.Run + await
+M:System.Threading.ThreadPool.UnsafeQueueUserWorkItem(System.Threading.IThreadPoolWorkItem,System.Boolean); ASY-002: fire-and-forget work is never joined; use Task.Run + await

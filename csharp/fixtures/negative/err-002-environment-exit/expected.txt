@@ -1,0 +1,4 @@
+# rule: ERR-002
+# mechanism: analyzer
+# summary: Terminating the process from library code (Exit and both FailFast overloads)
+RS0030 3

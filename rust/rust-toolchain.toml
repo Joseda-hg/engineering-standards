@@ -1,0 +1,6 @@
+# Pinned toolchain for the self-test workspace. Lint sets change between Clippy releases, so
+# fixture results are only comparable on the same toolchain. Bump deliberately (see VERSIONING.md).
+[toolchain]
+channel = "1.90.0"
+components = ["clippy", "rustfmt"]
+profile = "minimal"

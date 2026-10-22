@@ -1,11 +1,28 @@
-# Merge these tables into the consuming workspace root Cargo.toml.
+# Engineering Standards - Rust workspace lints.
+# Merge these tables into the consuming workspace root Cargo.toml and opt every member in with
+#   [lints]
+#   workspace = true
+# Levels are `warn` (baseline profile); CI runs Clippy with `-D warnings` (strict profile).
+# Every lint below is exercised by a negative fixture under rust/fixtures/negative/.
+# rust/Cargo.toml carries an identical copy (drift-checked by scripts/verify-fixtures.sh).
+
 [workspace.lints.rust]
+# SAFE-001: exceptions use #[expect(unsafe_code, reason = "...")] plus a `// SAFETY:` comment.
 unsafe_code = "warn"
+# ERR-001 / ASY-001: ignored Result values and un-awaited futures.
+unused_must_use = "warn"
 
 [workspace.lints.clippy]
 all = { level = "warn", priority = -1 }
-pedantic = { level = "allow", priority = -1 }
+# ERR-001: no unwrap/expect in production paths (allowed in tests via clippy.toml).
 unwrap_used = "warn"
 expect_used = "warn"
+# API-001: paths configured in clippy.toml.
 disallowed_methods = "warn"
-disallowed_types = "warn"
+# STATE-001: a wildcard arm on an enum hides newly added variants.
+wildcard_enum_match_arm = "warn"
+# SAFE-001: every sanctioned unsafe block needs a `// SAFETY:` comment.
+undocumented_unsafe_blocks = "warn"
+# SUP-001: suppressions use #[expect] (which fails once unnecessary) and must state a reason.
+allow_attributes = "warn"
+allow_attributes_without_reason = "warn"

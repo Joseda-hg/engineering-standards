@@ -1,2 +1,5 @@
-# Stable rustfmt defaults; avoid nightly-only options.
-edition = "2021"
+# Engineering Standards - rustfmt configuration. Stable options only.
+# Copy to the consuming workspace root.
+edition = "2024"
+style_edition = "2024"
+newline_style = "Unix"

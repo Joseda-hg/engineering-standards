@@ -1,0 +1,4 @@
+# rule: SAFE-001
+# mechanism: analyzer
+# summary: Sanctioned unsafe block without a SAFETY comment
+clippy::undocumented_unsafe_blocks

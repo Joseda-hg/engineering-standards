@@ -1,0 +1,4 @@
+# rule: API-001
+# mechanism: analyzer
+# summary: Wall clock read outside the sanctioned adapter
+clippy::disallowed_methods

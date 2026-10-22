@@ -1,0 +1,4 @@
+# rule: SAFE-001
+# mechanism: compiler
+# summary: unsafe code without a sanctioned exception
+unsafe_code

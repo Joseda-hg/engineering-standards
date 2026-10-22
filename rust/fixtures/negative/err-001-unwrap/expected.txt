@@ -1,0 +1,4 @@
+# rule: ERR-001
+# mechanism: analyzer
+# summary: unwrap() in a production path
+clippy::unwrap_used

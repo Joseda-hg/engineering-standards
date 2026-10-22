@@ -1,0 +1,4 @@
+# rule: STATE-001
+# mechanism: compiler
+# summary: match does not cover every enum variant
+E0004

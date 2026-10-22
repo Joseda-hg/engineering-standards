@@ -1,0 +1,4 @@
+# rule: FMT-001
+# mechanism: formatter
+# summary: Code that does not follow rustfmt.toml
+rustfmt

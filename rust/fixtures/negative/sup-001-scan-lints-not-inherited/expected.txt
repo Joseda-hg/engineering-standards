@@ -1,0 +1,4 @@
+# rule: SUP-001
+# mechanism: scan
+# summary: Crate opts out of the workspace lints
+SUP001

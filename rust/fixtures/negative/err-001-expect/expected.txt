@@ -1,0 +1,4 @@
+# rule: ERR-001
+# mechanism: analyzer
+# summary: expect() in a production path
+clippy::expect_used

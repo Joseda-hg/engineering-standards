@@ -1,0 +1,4 @@
+# rule: ERR-001
+# mechanism: compiler
+# summary: A Result is silently discarded
+unused_must_use

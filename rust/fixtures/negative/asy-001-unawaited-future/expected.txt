@@ -1,0 +1,4 @@
+# rule: ASY-001
+# mechanism: compiler
+# summary: A future is created and never awaited
+unused_must_use

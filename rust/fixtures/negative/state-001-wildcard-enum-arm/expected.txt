@@ -1,0 +1,4 @@
+# rule: STATE-001
+# mechanism: analyzer
+# summary: Wildcard arm hides enum variants from exhaustiveness checking
+clippy::wildcard_enum_match_arm

@@ -1,0 +1,4 @@
+# rule: SUP-001
+# mechanism: analyzer
+# summary: #[expect] without a reason
+clippy::allow_attributes_without_reason

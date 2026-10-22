@@ -1,0 +1,4 @@
+# Normalise line endings: .editorconfig (end_of_line = lf) and rustfmt (newline_style = "Unix")
+# would otherwise flag CRLF checkouts on Windows.
+* text=auto eol=lf
+*.png binary

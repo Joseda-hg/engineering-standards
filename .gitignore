@@ -1,6 +1,9 @@
 **/bin/
 **/obj/
 **/target/
+**/TestResults/
+reports/
 .vscode/
 .idea/
+.vs/
 .DS_Store

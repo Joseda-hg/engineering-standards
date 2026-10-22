@@ -10,7 +10,7 @@ repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 out="${1:-reports}"
 mkdir -p "$out/logs"
 out="$(cd "$out" && pwd)"
-cd "$repo"
+cd "$repo" || exit 1
 
 declare -a step_names=() step_results=() step_seconds=()
 run_step() {

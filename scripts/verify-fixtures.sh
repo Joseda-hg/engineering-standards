@@ -155,8 +155,8 @@ if [[ "$lang" == csharp || "$lang" == all ]]; then
 fi
 if [[ "$lang" == rust || "$lang" == all ]]; then
   verify_rust
-  check_baseline rust "profile-baseline (err-001-unwrap warns, exit 0)" "clippy::unwrap_used" \
-    bash -c 'cd "$1/rust" && cargo clippy -p neg-err-001-unwrap --message-format=json 2>/dev/null' _ "$repo"
+  rust_baseline_clippy() { (cd "$repo/rust" && cargo clippy -p neg-err-001-unwrap --message-format=json 2>/dev/null); }
+  check_baseline rust "profile-baseline (err-001-unwrap warns, exit 0)" "clippy::unwrap_used" rust_baseline_clippy
 fi
 
 echo "negative fixtures: $passed passed, $failed failed"

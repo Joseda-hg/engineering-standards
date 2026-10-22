@@ -49,3 +49,7 @@ version = "0.0.0"
 [[package]]
 name = "neg-sup-001-expect-without-reason"
 version = "0.0.0"
+
+[[package]]
+name = "neg-sup-001-stale-expect"
+version = "0.0.0"

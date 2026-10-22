@@ -101,7 +101,7 @@ verify_rust() {
     esac
     rc=0
     # Run from rust/ so rustup honours rust/rust-toolchain.toml.
-    out="$(cd "$repo/rust" && cargo clippy -p "neg-$name" --all-targets \
+    out="$(cd "$repo/rust" && cargo clippy --locked -p "neg-$name" --all-targets \
             --message-format=json -- -D warnings 2>/dev/null)" || rc=$?
     record rust "$dir" "$(jq -r 'select(.reason == "compiler-message") | .message
         | select(.level == "error" and (.message | test("^aborting due to") | not))
@@ -169,7 +169,7 @@ if [[ "$lang" == csharp || "$lang" == all ]]; then
 fi
 if [[ "$lang" == rust || "$lang" == all ]]; then
   verify_rust
-  rust_baseline_clippy() { (cd "$repo/rust" && cargo clippy -p neg-err-001-unwrap --message-format=json 2>/dev/null); }
+  rust_baseline_clippy() { (cd "$repo/rust" && cargo clippy --locked -p neg-err-001-unwrap --message-format=json 2>/dev/null); }
   check_baseline rust "profile-baseline (err-001-unwrap warns, exit 0)" "clippy::unwrap_used" rust_baseline_clippy
 fi
 

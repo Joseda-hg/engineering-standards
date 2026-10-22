@@ -9,6 +9,7 @@
 #                 --fix: dotnet format (whitespace, style and analyzer code fixes)
 #   rust PATH     a Cargo workspace or package directory (rust-toolchain.toml is honoured)
 #                 check: cargo fmt --check, cargo check, cargo clippy -D warnings, cargo test
+#                        (all --locked: a stale Cargo.lock fails instead of being rewritten)
 #                 --fix: cargo clippy --fix, cargo fmt
 #
 # Environment:
@@ -63,11 +64,11 @@ case "$lang" in
     step "cargo fmt --check"
     cargo fmt --all -- --check
     step "cargo check"
-    cargo check "${cargo_args[@]+"${cargo_args[@]}"}" --all-targets
+    cargo check --locked "${cargo_args[@]+"${cargo_args[@]}"}" --all-targets
     step "cargo clippy (${profile})"
-    cargo clippy "${cargo_args[@]+"${cargo_args[@]}"}" --all-targets -- "${deny[@]+"${deny[@]}"}"
+    cargo clippy --locked "${cargo_args[@]+"${cargo_args[@]}"}" --all-targets -- "${deny[@]+"${deny[@]}"}"
     step "cargo test"
-    cargo test "${cargo_args[@]+"${cargo_args[@]}"}"
+    cargo test --locked "${cargo_args[@]+"${cargo_args[@]}"}"
     ;;
   *) usage ;;
 esac

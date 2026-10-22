@@ -123,6 +123,20 @@ check_lint_drift() {
   fi
 }
 
+# CHANGELOG.md's latest release must match EngineeringStandardsVersion (see VERSIONING.md).
+check_version() {
+  local changelog props
+  changelog="$(grep -m1 -oE '^## \[[0-9]+\.[0-9]+\.[0-9]+\]' "$repo/CHANGELOG.md" | tr -d '#[] ')"
+  props="$(sed -n 's:.*<EngineeringStandardsVersion>\(.*\)</EngineeringStandardsVersion>.*:\1:p' \
+    "$repo/csharp/EngineeringStandards.props")"
+  if [[ -n "$changelog" && "$changelog" == "$props" ]]; then
+    passed=$((passed + 1)); printf '%-6s %-55s %-28s %s\n' all "version (CHANGELOG == props)" "[$props]" PASS
+  else
+    failed=$((failed + 1)); printf '%-6s %-55s %-28s %s\n' all "version (CHANGELOG == props)" "[$changelog/$props]" FAIL
+  fi
+}
+check_version
+
 # The baseline profile must report the same violations as warnings without failing the build.
 check_baseline() {
   local lang="$1" label="$2" expected="$3" rc=0 out actual

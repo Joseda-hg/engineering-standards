@@ -1,0 +1,4 @@
+# rule: SUP-001
+# mechanism: compiler
+# summary: #[expect] that no longer suppresses anything surfaces as a diagnostic
+unfulfilled_lint_expectations

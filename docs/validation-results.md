@@ -94,12 +94,13 @@ removing a lint from one or both lint tables each made the expected fixtures fai
 - Not automated: `!` null-forgiving operator, `async void`, blocking inside Rust `async fn`, layering
   rules, DOMAIN-001 (full list in [rule-coverage.md](rule-coverage.md)).
 - The `legacy` fingerprint ratchet is not implemented.
-- No published package: distribution is by Git tag (submodule or vendored copy).
+- No published package: distribution is by Git tag (submodule or vendored copy; first tag `v0.3.0`).
 
 ## Next steps (prioritised)
 
-1. **Protect and tag** (with authorisation): CI has run green on GitHub for both matrix jobs; protect
-   `main` with the `quality` checks and tag `v0.3.0`.
+1. ~~Protect and tag~~ - done 2026-10-22: the repository is public, `main` is protected by a ruleset
+   (no deletion or force push, pull request required, both `quality` matrix checks required and up
+   to date), and `v0.3.0` is tagged at `9a30bdf`.
 2. **Pilot adoption** in one small, non-PacificGold repository using the baseline → strict phases;
    capture friction in ADOPTION.md.
 3. **Close high-value gaps** with fixtures: `clippy::let_underscore_must_use`, `VSTHRD100` for
